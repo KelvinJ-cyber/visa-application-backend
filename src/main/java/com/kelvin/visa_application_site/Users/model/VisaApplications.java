@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.model;
+package com.kelvin.visa_application_site.Users.model;
 
 import com.kelvin.visa_application_site.enumerated.ApplicationStatus;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
-package com.kelvin.visa_application_site.config;
+package com.kelvin.visa_application_site.Users.config;
 
-import com.kelvin.visa_application_site.repo.UserRepo;
+import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfiguration {
 
     public final UserRepo userRepo;

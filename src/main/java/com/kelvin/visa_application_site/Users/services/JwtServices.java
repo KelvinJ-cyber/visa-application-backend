@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.services;
+package com.kelvin.visa_application_site.Users.services;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

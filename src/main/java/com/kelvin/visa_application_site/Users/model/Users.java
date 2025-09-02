@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.model;
+package com.kelvin.visa_application_site.Users.model;
 
 
 import com.kelvin.visa_application_site.enumerated.Role;
@@ -25,7 +25,10 @@ public class Users implements UserDetails {
     private int id;
 
     @Column(nullable = false)
-    private String name;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String email;
