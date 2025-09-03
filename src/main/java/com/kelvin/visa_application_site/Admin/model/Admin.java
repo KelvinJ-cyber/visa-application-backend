@@ -29,7 +29,10 @@ public class Admin implements UserDetails {
     private String password;
 
     @Column(nullable = false)
-    private String fullName;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Enumerated(EnumType.STRING)
     private final Role role = Role.ADMIN;
@@ -43,12 +46,12 @@ public class Admin implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
@@ -58,16 +61,16 @@ public class Admin implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return active;
+        return this.active;
     }
 
     @Override
     public boolean isEnabled() {
-        return active;
+        return this.active;
     }
 }

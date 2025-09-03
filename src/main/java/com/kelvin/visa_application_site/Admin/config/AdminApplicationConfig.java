@@ -1,6 +1,6 @@
-package com.kelvin.visa_application_site.Users.config;
+package com.kelvin.visa_application_site.Admin.config;
 
-import com.kelvin.visa_application_site.Users.repo.UserRepo;
+import com.kelvin.visa_application_site.Admin.repo.AdminRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,34 +12,33 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class ApplicationConfiguration {
+public class AdminApplicationConfig {
 
-    public final UserRepo userRepo;
-    public ApplicationConfiguration(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public final AdminRepo adminRepo;
+    public AdminApplicationConfig(AdminRepo adminRepo) {
+        this.adminRepo = adminRepo;
     }
 
     @Bean
-    public UserDetailsService userDetailsService (){
-        return email -> userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserDetailsService adminDetailsService(){
+        return email -> adminRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder adminPasswordEncoder(){
         return new BCryptPasswordEncoder(); // Use BCrypt for password encoding
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider adminAuthenticationProvider(){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(adminDetailsService());
+        authProvider.setPasswordEncoder(adminPasswordEncoder());
         return authProvider;
     }
 
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-       return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager adminAuthenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
-
 }

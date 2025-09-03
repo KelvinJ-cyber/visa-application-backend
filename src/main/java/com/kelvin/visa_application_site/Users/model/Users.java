@@ -52,12 +52,12 @@ public class Users implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
@@ -77,6 +77,6 @@ public class Users implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 }
