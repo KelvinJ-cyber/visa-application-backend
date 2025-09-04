@@ -1,10 +1,10 @@
 package com.kelvin.visa_application_site.Users.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,15 +19,17 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
-    private final AuthenticationProvider authenticationProvider;
-    private  final JwtAuthenticationFilter jwtAuthFilter;
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider userAuthenticationProvider;
+    private final AuthenticationProvider adminAuthenticationProvider;
 
     public SecurityConfig(
-            AuthenticationProvider authenticationProvider,
+            AuthenticationProvider userAuthenticationProvider,
+            AuthenticationProvider adminAuthenticationProvider,
             JwtAuthenticationFilter jwtAuthenticationFilter
     ){
-        this.authenticationProvider = authenticationProvider;
+        this.userAuthenticationProvider = userAuthenticationProvider;
+        this.adminAuthenticationProvider = adminAuthenticationProvider;
         this.jwtAuthFilter = jwtAuthenticationFilter;
     }
 
@@ -49,12 +51,18 @@ public class SecurityConfig {
                         // Use stateless sessions: no HTTP session will be created or used
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(authenticationProvider)
+                .authenticationManager(authenticationManager())
 
                 // Add the JWT filter *before* the UsernamePasswordAuthenticationFilter
                 // so JWTs are processed before Spring tries username/password authentication
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    //  Unified AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(List.of(userAuthenticationProvider, adminAuthenticationProvider));
     }
 
     // Defines CORS (Cross-Origin Resource Sharing) rules for frontend-backend communication

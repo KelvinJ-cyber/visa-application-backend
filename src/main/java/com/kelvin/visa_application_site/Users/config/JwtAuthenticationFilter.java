@@ -23,24 +23,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtServices jwtService;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService customUserDetailsService;   // for users
+    private final UserDetailsService adminDetailsService;  // for admins
 
     public JwtAuthenticationFilter(
             JwtServices jwtService,
-            UserDetailsService userDetailsService,
+            UserDetailsService customUserDetailsService,
+            UserDetailsService adminDetailsService,
             HandlerExceptionResolver handlerExceptionResolver
     ) {
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
+        this.customUserDetailsService = customUserDetailsService;
+        this.adminDetailsService = adminDetailsService;
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-    ) throws ServletException , IOException {
+    ) throws ServletException , IOException { // Todo Explain these exception in details
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -52,16 +54,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try{
             final String jwt = authHeader.substring(7);
             final String userEmail = jwtService.extractUsername(jwt);
+            final String role = jwtService.extractRole(jwt);
 
             // check if user is already authenticated
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if(userEmail != null && authentication == null){
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                UserDetails userDetails;
+                // pick the right service based on role
+                if ("ADMIN".equalsIgnoreCase(role)) {
+                    userDetails = this.adminDetailsService.loadUserByUsername(userEmail);
+                } else {
+                    userDetails = this.customUserDetailsService.loadUserByUsername(userEmail);
+                }
 
                 if(jwtService.isTokenValid(jwt, userDetails)){
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken( // Todo Ask chat to explain in depth
                             userDetails,
                             null,
                             userDetails.getAuthorities()

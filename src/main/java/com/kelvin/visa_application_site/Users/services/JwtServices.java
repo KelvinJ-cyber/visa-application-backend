@@ -41,7 +41,8 @@ public class JwtServices {
             UserDetails userDetails,
             long expiration
     ) {
-        // ? Compose a JWT: custom claims + standard claims (sub/iat/exp) and sign it with HS256.
+        extraClaims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+        // ? Compose a JWT: custom extraClaims + standard extraClaims (sub/iat/exp) and sign it with HS256.
         return Jwts
                 .builder()
                 .setClaims(extraClaims)                              // your custom payload fields
@@ -56,8 +57,7 @@ public class JwtServices {
     // ! Extracts a specific claim from the JWT token using the provided claims resolver function
     public  <T> T extractClaims(
             String token,
-            Function<Claims, T>
-            claimsResolver // function to extract specific claim
+            Function<Claims, T> claimsResolver // function to extract specific claim
     ){
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -70,10 +70,13 @@ public class JwtServices {
         return extractClaims(token, Claims::getExpiration);
     }
 
+    public String extractRole(String token) {
+        return extractClaims(token, claims -> claims.get("role", String.class));
+    }
+
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
-        return generateToken(claims, userDetails);
+
+        return generateToken(new HashMap<>(), userDetails);
     }
 
 
