@@ -1,6 +1,11 @@
 package com.kelvin.visa_application_site.Users.config;
 
 import com.kelvin.visa_application_site.Users.services.JwtServices;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,13 +50,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException , IOException { // Todo Explain these exception in details
 
         final String authHeader = request.getHeader("Authorization");
+        System.out.println(authHeader);
 
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println(authHeader);
             filterChain.doFilter(request, response);
             return;
         }
-        try{
+        try {
             final String jwt = authHeader.substring(7);
             final String userEmail = jwtService.extractUsername(jwt);
             final String role = jwtService.extractRole(jwt);
@@ -59,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // check if user is already authenticated
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if(userEmail != null && authentication == null){
+            if (userEmail != null && authentication == null) {
                 UserDetails userDetails;
                 // pick the right service based on role
                 if ("ROLE_ADMIN".equalsIgnoreCase(role)) {
@@ -68,13 +75,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     userDetails = this.customUserDetailsService.loadUserByUsername(userEmail);
                 }
 
-                if(jwtService.isTokenValid(jwt, userDetails)){
-
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken( // Todo Ask chat to explain in depth
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
@@ -83,9 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
 
-          } catch (Exception e) {
-            // 8️⃣ If anything fails (invalid token, etc.), handle exception gracefully
+        } catch (JwtException | IllegalArgumentException e) {
+            // Delegate to global exception handler
             handlerExceptionResolver.resolveException(request, response, null, e);
+            return;
         }
     }
 

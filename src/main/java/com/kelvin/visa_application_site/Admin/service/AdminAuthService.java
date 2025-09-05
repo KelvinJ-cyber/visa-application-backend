@@ -17,36 +17,36 @@ public class AdminAuthService {
     private final AdminRepo adminRepo;
     private final PasswordEncoder passwordEncoder;
     private final AdminJwtService adminJwtService;
-    private  final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
 
     public AdminAuthService(
             AdminRepo adminRepo,
-            @Qualifier("adminPasswordEncoder")PasswordEncoder passwordEncoder,
+            @Qualifier("adminPasswordEncoder") PasswordEncoder passwordEncoder,
             AdminJwtService adminJwtService,
             AuthenticationManager authenticationManager
-    ){
+    ) {
         this.adminRepo = adminRepo;
         this.passwordEncoder = passwordEncoder;
-        this.adminJwtService= adminJwtService;
-        this.authenticationManager =authenticationManager;
+        this.adminJwtService = adminJwtService;
+        this.authenticationManager = authenticationManager;
     }
 
 
-    public AdminAuthResponse authenticateAdmin(AdminLoginDto data){
+    public AdminAuthResponse authenticateAdmin(AdminLoginDto data) {
 
         Admin admin = adminRepo.findByEmail(data.email())
                 .orElseThrow(() -> new UsernameNotFoundException("Admin not found for" + data.email()));
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                     data.email(),
-                     data.password()
+                        data.email(),
+                        data.password()
                 )
         );
         String token = adminJwtService.generateToken(admin);
 
-        return new AdminAuthResponse(admin.getFirstName(), admin.getLastName(),token, admin.getRole().toString(), admin.getUsername());
+        return new AdminAuthResponse(admin.getFirstName(), admin.getLastName(), token, admin.getRole().toString(), admin.getUsername());
     }
 
 

@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/admin")
-public class adminDashboard {
+public class AdminDashboard {
 
     public HashMap<String, String> name() {
         HashMap<String, String> name = new HashMap<>();

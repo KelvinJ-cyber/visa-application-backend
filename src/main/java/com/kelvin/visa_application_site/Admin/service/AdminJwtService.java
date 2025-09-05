@@ -51,10 +51,16 @@ public class AdminJwtService {
             Claims claims = extractAllClaims(token);
             String username = claims.getSubject();
 
-            return username.equals(userDetails.getUsername()) && !isTokenExpired(claims);
+            boolean valid = username.equals(userDetails.getUsername()) && !isTokenExpired(claims);
+
+            if (!valid) {
+                System.out.println("Token invalid: username mismatch or expired");
+            }
+            return valid;
 
         } catch (JwtException | IllegalArgumentException e) {
-            return false; // token is invalid (expired, bad signature, malformed, etc.)
+            System.out.println("JWT exception: " + e.getMessage());
+            return false;
         }
     }
 
