@@ -75,7 +75,6 @@ public class JwtServices {
     }
 
     public String generateToken(UserDetails userDetails) {
-
         return generateToken(new HashMap<>(), userDetails);
     }
 

@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(userEmail != null && authentication == null){
                 UserDetails userDetails;
                 // pick the right service based on role
-                if ("ADMIN".equalsIgnoreCase(role)) {
+                if ("ROLE_ADMIN".equalsIgnoreCase(role)) {
                     userDetails = this.adminDetailsService.loadUserByUsername(userEmail);
                 } else {
                     userDetails = this.customUserDetailsService.loadUserByUsername(userEmail);
