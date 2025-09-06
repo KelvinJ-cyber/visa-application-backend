@@ -43,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-    ) throws ServletException , IOException { // Todo Explain these exception in details
+    ) throws ServletException , IOException { // Todo Explain these exception in details -> ✅ Done
 
         String path = request.getRequestURI();
         System.out.println(path);

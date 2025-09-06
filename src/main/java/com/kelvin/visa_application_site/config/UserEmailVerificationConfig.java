@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.Users.config;
+package com.kelvin.visa_application_site.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.Users.config;
+package com.kelvin.visa_application_site.config;
 
 import com.kelvin.visa_application_site.Users.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
