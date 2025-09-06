@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.Admin.config;
+package com.kelvin.visa_application_site.Users.config;
 
 import com.kelvin.visa_application_site.Admin.service.AdminDetailsService;
 import org.springframework.context.annotation.Bean;

@@ -1,11 +1,7 @@
-package com.kelvin.visa_application_site.Users.config;
+package com.kelvin.visa_application_site.config;
 
 import com.kelvin.visa_application_site.Users.services.JwtServices;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,14 +20,14 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtServices jwtService;
     private final UserDetailsService customUserDetailsService;   // for users
     private final UserDetailsService adminDetailsService;  // for admins
 
-    public JwtAuthenticationFilter(
+    public JwtAuthFilter(
             JwtServices jwtService,
             UserDetailsService customUserDetailsService,
             UserDetailsService adminDetailsService,
@@ -49,10 +45,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException , IOException { // Todo Explain these exception in details
 
+        String path = request.getRequestURI();
+        System.out.println(path);
+
         final String authHeader = request.getHeader("Authorization");
-        System.out.println(authHeader);
-
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println(authHeader);
             filterChain.doFilter(request, response);

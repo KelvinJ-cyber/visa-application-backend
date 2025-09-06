@@ -26,84 +26,85 @@ public class JwtServices {
     private Long jwtExpirationInMs;
 
 
-    // ? Extracts all claims from the JWT token
+    // -------------------
+    // TOKEN CREATION
+    // -------------------
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+        return buildToken(claims, userDetails, jwtExpirationInMs);
+    }
+
+    private String buildToken(Map<String, Object> claims, UserDetails userDetails, long expiration) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // -------------------
+    // TOKEN VALIDATION
+    // -------------------
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        try {
+            Claims claims = extractAllClaims(token);
+            String username = claims.getSubject();
+
+            boolean valid = username.equals(userDetails.getUsername()) && !isTokenExpired(claims);
+
+            if (!valid) {
+                System.out.println("Token invalid: username mismatch or expired");
+            }
+            return valid;
+
+        } catch (JwtException | IllegalArgumentException e) {
+            System.out.println("JWT exception: " + e.getMessage());
+            return false;
+        }
+    }
+
     private Claims extractAllClaims(String token) {
-        return  Jwts
-                .parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
+                .parseClaimsJws(token) // Verifies signature + expiration automatically
                 .getBody();
     }
 
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration
-    ) {
-        extraClaims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
-        // ? Compose a JWT: custom extraClaims + standard extraClaims (sub/iat/exp) and sign it with HS256.
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)                              // your custom payload fields
-                .setSubject(userDetails.getUsername())               // 'sub' claim: who the token is about
-                .setIssuedAt(new Date(System.currentTimeMillis()))   // 'iat' claim: when issued
-                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // 'exp' claim: when it expires
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)  // sign to prevent tampering
-                .compact();                                          // serialize to 'header.payload.signature'
+    // -------------------
+    // CLAIMS EXTRACTION
+    // -------------------
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        return claimsResolver.apply(extractAllClaims(token));
     }
 
-
-    // ! Extracts a specific claim from the JWT token using the provided claims resolver function
-    public  <T> T extractClaims(
-            String token,
-            Function<Claims, T> claimsResolver // function to extract specific claim
-    ){
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    public String extractUsername(String token){
-        return extractClaims(token, Claims::getSubject);
-    }
-    private Date extractExpiration(String token) {
-        return extractClaims(token, Claims::getExpiration);
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     public String extractRole(String token) {
-        return extractClaims(token, claims -> claims.get("role", String.class));
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails,jwtExpirationInMs);
+    // -------------------
+    // UTILITIES
+    // -------------------
+
+    private boolean isTokenExpired(Claims claims) {
+        return claims.getExpiration().before(new Date());
     }
 
-
-    public long getExpirationTime() {
-        // Exposes configured TTL. Make sure this is in MILLISECONDS if you add to currentTimeMillis().
-        return jwtExpirationInMs;
-    }
-
-    // ? Validates the JWT token against the provided user details
-    public boolean isTokenValid(String token, UserDetails userDetails){
-          try{
-              final String username = extractUsername(token);
-              return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-          } catch (JwtException | IllegalArgumentException e){
-              return false;
-          }
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    // Decode secret key
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

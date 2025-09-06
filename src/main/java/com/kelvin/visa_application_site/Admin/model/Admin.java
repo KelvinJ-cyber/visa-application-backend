@@ -35,7 +35,7 @@ public class Admin implements UserDetails {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    private final Role role = Role.ADMIN;
+    private final Role role = Role.USER;
 
     private final boolean active = true;
 

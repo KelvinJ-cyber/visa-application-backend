@@ -1,4 +1,4 @@
-package com.kelvin.visa_application_site.Users.config;
+package com.kelvin.visa_application_site.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,18 +19,18 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider userAuthenticationProvider;
     private final AuthenticationProvider adminAuthenticationProvider;
 
     public SecurityConfig(
             AuthenticationProvider userAuthenticationProvider,
             AuthenticationProvider adminAuthenticationProvider,
-            JwtAuthenticationFilter jwtAuthenticationFilter
+            JwtAuthFilter jwtAuthFilter
     ){
         this.userAuthenticationProvider = userAuthenticationProvider;
         this.adminAuthenticationProvider = adminAuthenticationProvider;
-        this.jwtAuthFilter = jwtAuthenticationFilter;
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
