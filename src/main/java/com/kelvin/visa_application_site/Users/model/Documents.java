@@ -14,18 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 public class Documents {
 
+    private final LocalDateTime uploadedAt = LocalDateTime.now();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String documentType;
     private String fileName;
     private String filePath;
     private String contentType;
     private Long fileSize;
-
-    private final LocalDateTime uploadedAt = LocalDateTime.now();
-
     // relationship with User or Application
     @ManyToOne
     @JoinColumn(name = "application_id")

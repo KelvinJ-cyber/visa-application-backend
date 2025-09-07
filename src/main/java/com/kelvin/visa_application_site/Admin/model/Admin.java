@@ -2,7 +2,10 @@ package com.kelvin.visa_application_site.Admin.model;
 
 import com.kelvin.visa_application_site.enumerated.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,35 +21,33 @@ import java.util.List;
 @AllArgsConstructor
 public class Admin implements UserDetails {
 
+    @Enumerated(EnumType.STRING)
+    private final Role role = Role.ADMIN;
+    private final boolean active = true;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Column(nullable = false, unique = true)
     private String email;   // login credential
-
     @Column(nullable = false)
     private String password;
-
     @Column(nullable = false)
     private String firstName;
-
     @Column(nullable = false)
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
-    private final Role role = Role.USER;
-
-    private final boolean active = true;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority( "ROLE_"+role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
@@ -88,10 +89,6 @@ public class Admin implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getFirstName() {

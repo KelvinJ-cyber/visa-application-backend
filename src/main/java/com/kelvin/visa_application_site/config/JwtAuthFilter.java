@@ -38,12 +38,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.adminDetailsService = adminDetailsService;
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-    ) throws ServletException , IOException { // Todo Explain these exception in details -> ✅ Done
+    ) throws ServletException, IOException { // Todo Explain these exception in details -> ✅ Done
 
         String path = request.getRequestURI();
         System.out.println(path);
@@ -89,7 +90,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } catch (JwtException | IllegalArgumentException e) {
             // Delegate to global exception handler
             handlerExceptionResolver.resolveException(request, response, null, e);
-            return;
         }
     }
 

@@ -27,18 +27,18 @@ public class SecurityConfig {
             AuthenticationProvider userAuthenticationProvider,
             AuthenticationProvider adminAuthenticationProvider,
             JwtAuthFilter jwtAuthFilter
-    ){
+    ) {
         this.userAuthenticationProvider = userAuthenticationProvider;
         this.adminAuthenticationProvider = adminAuthenticationProvider;
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
 
-                .authorizeHttpRequests( authorize -> authorize
+                .authorizeHttpRequests(authorize -> authorize
 
                         .requestMatchers("/api/auth/user/**").permitAll()
                         .requestMatchers("/api/auth/admin/**").permitAll()
@@ -68,7 +68,7 @@ public class SecurityConfig {
 
     // Defines CORS (Cross-Origin Resource Sharing) rules for frontend-backend communication
     @Bean
-    public UrlBasedCorsConfigurationSource corsConfiguration(){
+    public UrlBasedCorsConfigurationSource corsConfiguration() {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
         corsConfig.setAllowedOrigins(List.of(
@@ -79,9 +79,9 @@ public class SecurityConfig {
         corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
         // Register this configuration for all paths (/**)
-       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-       source.registerCorsConfiguration("/**", corsConfig);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
 
-       return source;
+        return source;
     }
 }

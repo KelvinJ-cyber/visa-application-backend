@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 public class AdminDetailsService implements UserDetailsService {
 
     private final AdminRepo adminRepo;
+
     public AdminDetailsService(AdminRepo adminRepo) {
         this.adminRepo = adminRepo;
     }

@@ -1,11 +1,18 @@
 package com.kelvin.visa_application_site.Users.services;
 
+import com.kelvin.visa_application_site.Users.dto.UserLoginDto;
+import com.kelvin.visa_application_site.Users.dto.UserLoginResponse;
 import com.kelvin.visa_application_site.Users.dto.UserRegisterDto;
 import com.kelvin.visa_application_site.Users.dto.VerifyUserDto;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.repo.UserRepo;
+import com.kelvin.visa_application_site.exception.InvalidCodeException;
+import com.kelvin.visa_application_site.exception.UserNotFoundException;
+import com.kelvin.visa_application_site.exception.VerificationExpiredException;
 import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +28,27 @@ public class UserAuthService {
     private final PasswordEncoder userPasswordEncoder;
     private final UserVerifyEmailService userVerifyEmailService;
     private final AuthenticationManager authenticationManager;
+    private final JwtServices jwtServices;
 
     public UserAuthService(
             UserRepo userRepo,
             PasswordEncoder userPasswordEncoder,
             AuthenticationManager authenticationManager,
-            UserVerifyEmailService userVerifyEmailService
+            UserVerifyEmailService userVerifyEmailService,
+            JwtServices jwtServices
     ) {
         this.userRepo = userRepo;
         this.userPasswordEncoder = userPasswordEncoder;
         this.userVerifyEmailService = userVerifyEmailService;
         this.authenticationManager = authenticationManager;
+        this.jwtServices = jwtServices;
 
     }
 
-    public Users register(UserRegisterDto data){
+    public Users register(UserRegisterDto data) {
         Users user = new Users(
                 data.email(),
-                data.password(),
+                userPasswordEncoder.encode(data.password()),
                 data.firstName(),
                 data.lastName()
         );
@@ -51,7 +61,7 @@ public class UserAuthService {
         return user;
     }
 
-    private void sendVerificationEmail(Users user){
+    private void sendVerificationEmail(Users user) {
         String subject = "Account Verification";
         String verificationCode = "VERIFICATION CODE " + user.getVerificationCode();
         String htmlMessage =
@@ -95,30 +105,68 @@ public class UserAuthService {
                         "</table>" +
                         "</body>" +
                         "</html>";
-        try{
+        try {
             userVerifyEmailService.sendVerificationEmail(user.getUsername(), subject, htmlMessage);
-        }catch (MessagingException e){
+        } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
+
     public void verifyUser(VerifyUserDto input) {
         Optional<Users> optionalUser = userRepo.findByEmail(input.email());
+
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException("User not found with email: " + input.email());
+        }
+
+        Users user = optionalUser.get();
+
+        if (user.getVerificationExpiry().isBefore(LocalDateTime.now())) {
+            throw new VerificationExpiredException("Verification code has expired");
+        }
+
+        if (!user.getVerificationCode().equals(input.verificationCode())) {
+            throw new InvalidCodeException("Invalid verification code");
+        }
+        user.setEnabled(true);
+        user.setVerificationCode(null);
+        user.setVerificationExpiry(null);
+        userRepo.save(user);
+    }
+
+    public void resendVerificationCode(String email) {
+        Optional<Users> optionalUser = userRepo.findByEmail(email);
         if (optionalUser.isPresent()) {
             Users user = optionalUser.get();
-            if (user.getVerificationExpiry().isBefore(LocalDateTime.now())) {
-                throw new RuntimeException("Verification code has expired");
+            if (user.isEnabled()) {
+                throw new RuntimeException("Account is already verified");
             }
-            if (user.getVerificationCode().equals(input.verificationCode())) {
-                user.setEnabled(true);
-                user.setVerificationCode(null);
-                user.setVerificationExpiry(null);
-                userRepo.save(user);
-            } else {
-                throw new RuntimeException("Invalid verification code");
-            }
+            user.setVerificationCode(generateVerificationCode());
+            user.setVerificationExpiry(LocalDateTime.now().plusMinutes(5));
+            sendVerificationEmail(user);
+            userRepo.save(user);
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public UserLoginResponse authenticate(UserLoginDto data) {
+        Users user = userRepo.findByEmail(data.email())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new RuntimeException("Account not verified. Please verify your account.");
+        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        data.email(),
+                        data.password()
+                )
+        );
+        String token = jwtServices.generateToken(user);
+
+        return new UserLoginResponse(user.getFirstName(), user.getLastName(), user.getRole().toString(), token, jwtServices.extractExpiration(token));
+
     }
 
     private String generateVerificationCode() {
@@ -126,10 +174,6 @@ public class UserAuthService {
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
-
-
-
-
 
 
 }

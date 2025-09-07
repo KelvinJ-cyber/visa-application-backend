@@ -12,12 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AdminSeeder {
 
     @Bean
-    public CommandLineRunner createAdmin(AdminRepo adminRepo,@Qualifier("adminPasswordEncoder")PasswordEncoder passwordEncoder){
+    public CommandLineRunner createAdmin(AdminRepo adminRepo, @Qualifier("adminPasswordEncoder") PasswordEncoder passwordEncoder) {
         return args -> {
 
 
             if (adminRepo.findByEmail("kelvinosondu419@gmail.com").isEmpty()) {
-                Admin admin =  new Admin();
+                Admin admin = new Admin();
 
                 admin.setFirstName("Kelvin");
                 admin.setLastName("Justine");

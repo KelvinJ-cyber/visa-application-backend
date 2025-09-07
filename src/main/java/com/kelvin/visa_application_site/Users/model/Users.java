@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -21,39 +20,44 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Users implements UserDetails {
+    @Enumerated(EnumType.STRING)
+    private final Role role = Role.USER;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Column(nullable = false)
     private String firstName;
-
     @Column(nullable = false)
     private String lastName;
-
     @Column(nullable = false, unique = true)
-    private String email;
-
+    private final String email;
     @Column(nullable = false)
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    private final Role role = Role.USER;
-
+    private final String password;
     private boolean enabled;
 
     private String verificationCode;
 
     private LocalDateTime verificationExpiry;
 
+    public Users(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of( new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override
@@ -81,11 +85,8 @@ public class Users implements UserDetails {
         return this.enabled;
     }
 
-    public Users(String email, String password, String firstName, String lastName ) {
-        this.email = email;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getFirstName() {
@@ -102,10 +103,6 @@ public class Users implements UserDetails {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getVerificationCode() {

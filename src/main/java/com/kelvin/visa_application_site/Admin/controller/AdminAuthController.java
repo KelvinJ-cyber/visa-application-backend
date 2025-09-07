@@ -16,31 +16,32 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminAuthController {
 
     private final AdminAuthService adminAuthService;
-    private AdminAuthController(AdminAuthService adminAuthService){
+
+    private AdminAuthController(AdminAuthService adminAuthService) {
         this.adminAuthService = adminAuthService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AdminLoginDto data){
-       try{
-           AdminAuthResponse response = adminAuthService.authenticateAdmin(data);
+    public ResponseEntity<?> login(@RequestBody AdminLoginDto data) {
+        try {
+            AdminAuthResponse response = adminAuthService.authenticateAdmin(data);
 
-           if ( response != null && response.token() != null){
-               return ResponseEntity.ok(response);
-           }else {
-               return ResponseEntity
-                       .status(HttpStatus.UNAUTHORIZED)
-                       .body("Login failed: invalid credentials ");
-           }
-       } catch (UsernameNotFoundException e) {
-           return ResponseEntity
-                   .status(HttpStatus.UNAUTHORIZED)
-                   .body(e.getMessage());
-       } catch (Exception e) {
-           return ResponseEntity
-                   .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                   .body("Something went wrong: " + e.getMessage());
-       }
+            if (response != null && response.token() != null) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body("Login failed: invalid credentials ");
+            }
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something went wrong: " + e.getMessage());
+        }
     }
 
 

@@ -15,28 +15,21 @@ import java.time.LocalDateTime;
 @Builder
 public class VisaApplications {
 
+    private final LocalDateTime createdAt = LocalDateTime.now();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int applicationId;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
-
     @Column(nullable = false)
     private String visaType;
-
     @Column(nullable = false)
     private String countryOfApplication;
-
     @Column(nullable = false)
     private String passportNumber;
-
     @Column(nullable = false)
     private String nationality;
-
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus status = ApplicationStatus.DRAFT;
-
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final ApplicationStatus status = ApplicationStatus.DRAFT;
 }
