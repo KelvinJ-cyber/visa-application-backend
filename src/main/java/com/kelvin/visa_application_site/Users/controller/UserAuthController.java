@@ -12,22 +12,21 @@ import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import com.kelvin.visa_application_site.exception.VerificationExpiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("/api/auth/user")
 public class UserAuthController {
 
-    private final JwtServices jwtService;
     private final UserAuthService userAuthService;
 
     public UserAuthController(
-            JwtServices jwtService,
             UserAuthService userAuthService
     ) {
-        this.jwtService = jwtService;
         this.userAuthService = userAuthService;
     }
 
