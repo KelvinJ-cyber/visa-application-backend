@@ -32,4 +32,69 @@ public class VisaApplications {
     private String nationality;
     @Enumerated(EnumType.STRING)
     private final ApplicationStatus status = ApplicationStatus.DRAFT;
+    private String message = "Your visa application has been received.";
+
+    public int getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(int applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getPassportNumber() {
+        return passportNumber;
+    }
+
+    public void setPassportNumber(String passportNumber) {
+        this.passportNumber = passportNumber;
+    }
+
+    public String getCountryOfApplication() {
+        return countryOfApplication;
+    }
+
+    public void setCountryOfApplication(String countryOfApplication) {
+        this.countryOfApplication = countryOfApplication;
+    }
+
+    public String getVisaType() {
+        return visaType;
+    }
+
+    public void setVisaType(String visaType) {
+        this.visaType = visaType;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
