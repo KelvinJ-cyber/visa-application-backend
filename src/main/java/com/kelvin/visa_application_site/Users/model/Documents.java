@@ -14,15 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 public class Documents {
 
-    private final LocalDateTime uploadedAt = LocalDateTime.now();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String documentType;
     private String fileName;
     private String filePath;
-    private String contentType;
-    private Long fileSize;
+    private final LocalDateTime uploadedAt = LocalDateTime.now();
+
+
     // relationship with User or Application
     @ManyToOne
     @JoinColumn(name = "application_id")
@@ -36,20 +36,8 @@ public class Documents {
         this.visaApplication = visaApplication;
     }
 
-    public Long getFileSize() {
-        return fileSize;
-    }
 
     public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
     }
 
     public String getFilePath() {
