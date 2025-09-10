@@ -8,4 +8,5 @@ public record DocumentResponseDto(
         String fileType,
         String filePath,
         LocalDateTime uploadedAt
-) {}
+) {
+}

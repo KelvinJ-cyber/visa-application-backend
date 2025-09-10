@@ -3,7 +3,10 @@ package com.kelvin.visa_application_site.Users.model;
 
 import com.kelvin.visa_application_site.enumerated.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,7 +48,8 @@ public class Users implements UserDetails {
         this.lastName = lastName;
     }
 
-    public  Users(){}
+    public Users() {
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

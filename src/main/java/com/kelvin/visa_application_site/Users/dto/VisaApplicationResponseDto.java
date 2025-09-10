@@ -1,6 +1,5 @@
 package com.kelvin.visa_application_site.Users.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kelvin.visa_application_site.enumerated.ApplicationStatus;
 
 import java.time.LocalDateTime;
@@ -14,4 +13,5 @@ public record VisaApplicationResponseDto(
         String message,
         LocalDateTime createAt,
         ApplicationStatus status
-) {}
+) {
+}

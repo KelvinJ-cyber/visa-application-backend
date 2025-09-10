@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class VisaApplicationService{
+public class VisaApplicationService {
 
     private final VisaApplicationRepo visaRepo;
 
-    public VisaApplicationService(VisaApplicationRepo visaRepo){
+    public VisaApplicationService(VisaApplicationRepo visaRepo) {
         this.visaRepo = visaRepo;
     }
 
 
-    public VisaApplicationResponseDto createApplication(Users user, VisaApplicationDto data){
+    public VisaApplicationResponseDto createApplication(Users user, VisaApplicationDto data) {
 
         VisaApplications applications = new VisaApplications();
         applications.setUser(user);

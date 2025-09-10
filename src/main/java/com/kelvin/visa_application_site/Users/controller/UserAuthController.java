@@ -5,7 +5,6 @@ import com.kelvin.visa_application_site.Users.dto.UserLoginResponse;
 import com.kelvin.visa_application_site.Users.dto.UserRegisterDto;
 import com.kelvin.visa_application_site.Users.dto.VerifyUserDto;
 import com.kelvin.visa_application_site.Users.model.Users;
-import com.kelvin.visa_application_site.Users.services.JwtServices;
 import com.kelvin.visa_application_site.Users.services.UserAuthService;
 import com.kelvin.visa_application_site.exception.InvalidCodeException;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;

@@ -20,14 +20,7 @@ public class Documents {
     private String documentType;
     private String fileName;
     private String filePath;
-
-    public void setUploadedAt(LocalDateTime uploadedAt) {
-        this.uploadedAt = uploadedAt;
-    }
-
     private LocalDateTime uploadedAt;
-
-
     // relationship with User or Application
     @ManyToOne
     @JoinColumn(name = "application_id")
@@ -40,7 +33,6 @@ public class Documents {
     public void setVisaApplication(VisaApplications visaApplication) {
         this.visaApplication = visaApplication;
     }
-
 
     public void setFileSize(Long fileSize) {
     }
@@ -79,5 +71,9 @@ public class Documents {
 
     public LocalDateTime getUploadedAt() {
         return uploadedAt;
+    }
+
+    public void setUploadedAt(LocalDateTime uploadedAt) {
+        this.uploadedAt = uploadedAt;
     }
 }

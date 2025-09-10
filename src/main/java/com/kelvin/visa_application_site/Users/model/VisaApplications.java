@@ -16,29 +16,22 @@ import java.time.LocalDateTime;
 @Builder
 public class VisaApplications {
 
+    @Enumerated(EnumType.STRING)
+    private final ApplicationStatus status = ApplicationStatus.DRAFT;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int applicationId;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
-
     @Column(nullable = false)
     private String visaType;
-
     @Column(nullable = false)
     private String countryOfApplication;
-
     @Column(nullable = false, unique = true)
     private String passportNumber;
-
     @Column(nullable = false)
     private String nationality;
-
-    @Enumerated(EnumType.STRING)
-    private final ApplicationStatus status = ApplicationStatus.DRAFT;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss Z")
     private LocalDateTime createdAt;
 
@@ -50,10 +43,6 @@ public class VisaApplications {
 
     public void setApplicationId(int applicationId) {
         this.applicationId = applicationId;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public ApplicationStatus getStatus() {
@@ -102,6 +91,10 @@ public class VisaApplications {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getMessage() {
