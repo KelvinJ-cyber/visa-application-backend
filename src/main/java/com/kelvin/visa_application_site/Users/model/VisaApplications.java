@@ -1,5 +1,6 @@
 package com.kelvin.visa_application_site.Users.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kelvin.visa_application_site.enumerated.ApplicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,23 +16,32 @@ import java.time.LocalDateTime;
 @Builder
 public class VisaApplications {
 
-    private final LocalDateTime createdAt = LocalDateTime.now();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int applicationId;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+
     @Column(nullable = false)
     private String visaType;
+
     @Column(nullable = false)
     private String countryOfApplication;
-    @Column(nullable = false)
+
+    @Column(nullable = false, unique = true)
     private String passportNumber;
+
     @Column(nullable = false)
     private String nationality;
+
     @Enumerated(EnumType.STRING)
     private final ApplicationStatus status = ApplicationStatus.DRAFT;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss Z")
+    private LocalDateTime createdAt;
+
     private String message = "Your visa application has been received.";
 
     public int getApplicationId() {
@@ -40,6 +50,10 @@ public class VisaApplications {
 
     public void setApplicationId(int applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public ApplicationStatus getStatus() {

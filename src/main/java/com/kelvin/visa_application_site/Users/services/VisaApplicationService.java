@@ -7,6 +7,7 @@ import com.kelvin.visa_application_site.Users.model.VisaApplications;
 import com.kelvin.visa_application_site.Users.repo.VisaApplicationRepo;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ public class VisaApplicationService{
         applications.setCountryOfApplication(data.countryOfApplication());
         applications.setPassportNumber(data.passportNumber());
         applications.setNationality(data.nationality());
+        applications.setCreatedAt(LocalDateTime.now());
         applications.getStatus();
 
         VisaApplications saved = visaRepo.save(applications);
@@ -40,6 +42,7 @@ public class VisaApplicationService{
                 saved.getPassportNumber(),
                 saved.getNationality(),
                 saved.getMessage(),
+                saved.getCreatedAt(),
                 saved.getStatus()
         );
 
@@ -54,6 +57,7 @@ public class VisaApplicationService{
                         app.getPassportNumber(),
                         app.getNationality(),
                         app.getMessage(),
+                        app.getCreatedAt(),
                         app.getStatus()
                 ))
                 .collect(Collectors.toList());

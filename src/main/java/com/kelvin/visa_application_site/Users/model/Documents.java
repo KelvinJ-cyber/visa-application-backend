@@ -20,7 +20,12 @@ public class Documents {
     private String documentType;
     private String fileName;
     private String filePath;
-    private final LocalDateTime uploadedAt = LocalDateTime.now();
+
+    public void setUploadedAt(LocalDateTime uploadedAt) {
+        this.uploadedAt = uploadedAt;
+    }
+
+    private LocalDateTime uploadedAt;
 
 
     // relationship with User or Application

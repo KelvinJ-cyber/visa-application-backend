@@ -29,9 +29,9 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private String lastName;
     @Column(nullable = false, unique = true)
-    private final String email;
+    private String email;
     @Column(nullable = false)
-    private final String password;
+    private String password;
     private boolean enabled;
 
     private String verificationCode;
@@ -44,6 +44,8 @@ public class Users implements UserDetails {
         this.firstName = firstName;
         this.lastName = lastName;
     }
+
+    public  Users(){}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
