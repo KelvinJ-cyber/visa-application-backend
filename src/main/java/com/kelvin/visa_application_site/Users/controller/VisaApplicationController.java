@@ -8,12 +8,15 @@ import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import com.kelvin.visa_application_site.Users.services.VisaApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasRole('USER')")
+@CrossOrigin(origins =  "http://localhost:5173")
 @RequestMapping("/api/user/applications")
 public class VisaApplicationController {
 

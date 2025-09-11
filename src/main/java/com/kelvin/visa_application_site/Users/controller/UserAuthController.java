@@ -18,6 +18,7 @@ import java.util.Map;
 
 @PreAuthorize("hasRole('USER')")
 @RestController
+@CrossOrigin(origins =  "http://localhost:5173")
 @RequestMapping("/api/auth/user")
 public class UserAuthController {
 
