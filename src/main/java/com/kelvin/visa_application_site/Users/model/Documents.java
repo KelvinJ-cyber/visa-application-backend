@@ -18,9 +18,21 @@ public class Documents {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String documentType;
+
     private String fileName;
-    private String filePath;
+    @Lob
+    private byte[] data;
+
     private LocalDateTime uploadedAt;
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
     // relationship with User or Application
     @ManyToOne
     @JoinColumn(name = "application_id")
@@ -35,14 +47,6 @@ public class Documents {
     }
 
     public void setFileSize(Long fileSize) {
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
     }
 
     public String getFileName() {

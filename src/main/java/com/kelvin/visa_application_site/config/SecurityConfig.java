@@ -68,7 +68,7 @@ public class SecurityConfig {
 
     // Defines CORS (Cross-Origin Resource Sharing) rules for frontend-backend communication
     @Bean
-    public UrlBasedCorsConfigurationSource corsConfiguration() {
+    public  CorsConfiguration corsConfiguration() {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
         corsConfig.setAllowedOrigins(List.of(
@@ -82,6 +82,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
 
-        return source;
+        return corsConfig;
     }
 }

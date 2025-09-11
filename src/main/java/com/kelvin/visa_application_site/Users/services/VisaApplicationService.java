@@ -5,10 +5,12 @@ import com.kelvin.visa_application_site.Users.dto.VisaApplicationResponseDto;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.model.VisaApplications;
 import com.kelvin.visa_application_site.Users.repo.VisaApplicationRepo;
+import com.kelvin.visa_application_site.exception.ApplicationNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +63,10 @@ public class VisaApplicationService {
                         app.getStatus()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public VisaApplications findApplicationById(int id){
+              return visaRepo.findById(id).orElseThrow(() -> new ApplicationNotFoundException("Application Not Found"));
     }
 
 }
