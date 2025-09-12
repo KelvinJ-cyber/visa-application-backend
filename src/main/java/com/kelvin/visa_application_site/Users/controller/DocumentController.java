@@ -21,7 +21,7 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @PostMapping("/upload/{applicationId}")
+    @PostMapping(value = "/upload/{applicationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
                                              @PathVariable int applicationId) {
         try {

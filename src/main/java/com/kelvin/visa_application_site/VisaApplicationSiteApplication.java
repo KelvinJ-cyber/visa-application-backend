@@ -8,6 +8,7 @@ public class VisaApplicationSiteApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(VisaApplicationSiteApplication.class, args);
+        System.out.println("✅ Application Started, Test your Endpoints  !!");
     }
 
 }
