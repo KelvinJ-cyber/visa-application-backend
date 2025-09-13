@@ -98,7 +98,7 @@ public class UserAuthService {
 
                         "<tr>" +
                         "<td style='background:#f5f5f5; padding:15px; text-align:center; font-size:12px; color:#777777;'>" +
-                        "&copy; " + java.time.Year.now() + " YourApp. All rights reserved." +
+                        "&copy; " + java.time.Year.now() + " Visa. All rights reserved." +
                         "</td>" +
                         "</tr>" +
 

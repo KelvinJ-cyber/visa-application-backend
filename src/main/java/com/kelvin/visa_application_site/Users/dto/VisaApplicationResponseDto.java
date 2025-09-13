@@ -12,6 +12,7 @@ public record VisaApplicationResponseDto(
         String nationality,
         String message,
         LocalDateTime createAt,
+        String remarks,
         ApplicationStatus status
 ) {
 }

@@ -16,14 +16,14 @@ import java.time.LocalDateTime;
 @Builder
 public class VisaApplications {
 
-    @Enumerated(EnumType.STRING)
-    private final ApplicationStatus status = ApplicationStatus.DRAFT;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int applicationId;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status = ApplicationStatus.DRAFT;
     @Column(nullable = false)
     private String visaType;
     @Column(nullable = false)
@@ -34,6 +34,29 @@ public class VisaApplications {
     private String nationality;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss Z")
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
+    }
+
+    private String remarks;
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     private String message = "Your visa application has been received.";
 

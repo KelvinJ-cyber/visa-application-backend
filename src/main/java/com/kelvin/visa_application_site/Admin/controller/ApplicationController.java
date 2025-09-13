@@ -2,16 +2,12 @@ package com.kelvin.visa_application_site.Admin.controller;
 
 
 import com.kelvin.visa_application_site.Admin.dto.AllApplicationsResponseDto;
-import com.kelvin.visa_application_site.Admin.service.ViewAllApplication;
+import com.kelvin.visa_application_site.Admin.dto.UpdateStatusRequest;
+import com.kelvin.visa_application_site.Admin.service.ApplicationServices;
 import com.kelvin.visa_application_site.Users.dto.VisaApplicationResponseDto;
-import com.kelvin.visa_application_site.Users.model.Users;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,15 +17,25 @@ import java.util.List;
 @RequestMapping("/api/admin/applications")
 public class ApplicationController {
 
-    public final ViewAllApplication viewAllApplication;
-    public ApplicationController(ViewAllApplication viewAllApplication){
-        this.viewAllApplication = viewAllApplication;
+    public final ApplicationServices applicationServices;
+    public ApplicationController(ApplicationServices applicationServices){
+        this.applicationServices = applicationServices;
     }
 
     @GetMapping
-    public ResponseEntity<List<AllApplicationsResponseDto>> getApplications() {
+    public ResponseEntity<List<AllApplicationsResponseDto>> getApplications(@RequestParam(required = false) String status) {
 
-        return ResponseEntity.ok(viewAllApplication.viewApplication());
+        return ResponseEntity.ok(applicationServices.getApplications(status));
 
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<VisaApplicationResponseDto> updateStatus(
+            @PathVariable int id,
+            @RequestBody UpdateStatusRequest request) {
+
+        VisaApplicationResponseDto updated = applicationServices.updateApplicationStatus(id, request);
+        return ResponseEntity.ok(updated);
+    }
+
 }

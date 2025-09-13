@@ -32,6 +32,10 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
+    public String getFullName(){
+        return  firstName + " " + lastName;
+    }
+
     public int getId() {
         return id;
     }

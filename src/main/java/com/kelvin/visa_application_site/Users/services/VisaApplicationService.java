@@ -50,6 +50,7 @@ public class VisaApplicationService {
                 saved.getNationality(),
                 saved.getMessage(),
                 saved.getCreatedAt(),
+                saved.getRemarks(),
                 saved.getStatus()
         );
 
@@ -65,6 +66,7 @@ public class VisaApplicationService {
                         app.getNationality(),
                         app.getMessage(),
                         app.getCreatedAt(),
+                        app.getRemarks(),
                         app.getStatus()
                 ))
                 .collect(Collectors.toList());
