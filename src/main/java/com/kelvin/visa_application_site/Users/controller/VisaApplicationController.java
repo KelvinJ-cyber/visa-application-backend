@@ -21,19 +21,18 @@ import java.util.List;
 public class VisaApplicationController {
 
     public final VisaApplicationService applicationService;
-    public final UserRepo userRepo;
 
-    public VisaApplicationController(VisaApplicationService applicationService, UserRepo userRepo) {
+    public VisaApplicationController(VisaApplicationService applicationService) {
         this.applicationService = applicationService;
-        this.userRepo = userRepo;
+
     }
 
-    @PostMapping
+    @PostMapping("/{userId}")
     public ResponseEntity<VisaApplicationResponseDto> createApplication(
             @RequestBody VisaApplicationDto data,
-            @AuthenticationPrincipal Users user
+            @PathVariable int userId
     ) {
-        VisaApplicationResponseDto responseDto = applicationService.createApplication(user, data);
+        VisaApplicationResponseDto responseDto = applicationService.createApplication(userId, data);
         return ResponseEntity.ok(responseDto);
     }
 

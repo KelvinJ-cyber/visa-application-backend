@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface VisaApplicationRepo extends JpaRepository<VisaApplications, Integer> {
     List<VisaApplications> findByUser(Users users);
+    List<VisaApplications> findAllByUser(Users users);
 }

@@ -31,6 +31,15 @@ public class Users implements UserDetails {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)

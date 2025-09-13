@@ -4,28 +4,33 @@ import com.kelvin.visa_application_site.Users.dto.VisaApplicationDto;
 import com.kelvin.visa_application_site.Users.dto.VisaApplicationResponseDto;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.model.VisaApplications;
+import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import com.kelvin.visa_application_site.Users.repo.VisaApplicationRepo;
 import com.kelvin.visa_application_site.exception.ApplicationNotFoundException;
+import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class VisaApplicationService {
 
     private final VisaApplicationRepo visaRepo;
+    public final UserRepo userRepo;
 
-    public VisaApplicationService(VisaApplicationRepo visaRepo) {
+    public VisaApplicationService(VisaApplicationRepo visaRepo, UserRepo userRepo) {
         this.visaRepo = visaRepo;
+        this.userRepo = userRepo;
     }
 
 
-    public VisaApplicationResponseDto createApplication(Users user, VisaApplicationDto data) {
+    public VisaApplicationResponseDto createApplication(int userId, VisaApplicationDto data) {
 
         VisaApplications applications = new VisaApplications();
+         Users user = userRepo.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         applications.setUser(user);
         applications.setVisaType(data.visaType());
         applications.setCountryOfApplication(data.countryOfApplication());
