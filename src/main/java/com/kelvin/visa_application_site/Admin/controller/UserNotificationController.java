@@ -15,12 +15,12 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/admin/notification")
-public class SendNotificationController {
+public class UserNotificationController {
 
     public final MailService mailService;
     private final UserRepo userRepo;
 
-    public SendNotificationController(MailService mailService, UserRepo userRepo) {
+    public UserNotificationController(MailService mailService, UserRepo userRepo) {
         this.mailService = mailService;
         this.userRepo = userRepo;
     }
@@ -46,5 +46,24 @@ public class SendNotificationController {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/broadcastEmail")
+    public ResponseEntity<?> sendBroadcastEmail(Map<String, String> request) {
+
+        if (!request.containsKey("subject") || !request.containsKey("message")
+                || request.get("subject").isBlank() || request.get("message").isBlank()) {
+            return ResponseEntity.badRequest().body("Subject and message are required!");
+        }
+        try {
+            mailService.sendBroadcastEmail(request);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Email sent to all Applicants "
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+
     }
 }
