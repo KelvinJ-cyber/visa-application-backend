@@ -48,7 +48,7 @@ public class UserNotificationController {
         }
     }
 
-    @PostMapping("/broadcastEmail")
+    @PostMapping("/email-all")
     public ResponseEntity<?> sendBroadcastEmail(Map<String, String> request) {
 
         if (!request.containsKey("subject") || !request.containsKey("message")

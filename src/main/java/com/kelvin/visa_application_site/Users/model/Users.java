@@ -3,10 +3,6 @@ package com.kelvin.visa_application_site.Users.model;
 
 import com.kelvin.visa_application_site.enumerated.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,13 +13,14 @@ import java.util.List;
 
 @Table(name = "users")
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@Builder
 public class Users implements UserDetails {
     @Enumerated(EnumType.STRING)
     private final Role role = Role.USER;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -31,6 +28,25 @@ public class Users implements UserDetails {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
+
+    public String getResetOtp() {
+        return resetOtp;
+    }
+
+    public void setResetOtp(String resetOtp) {
+        this.resetOtp = resetOtp;
+    }
+
+    public LocalDateTime getResetOtpExpiry() {
+        return resetOtpExpiry;
+    }
+
+    public void setResetOtpExpiry(LocalDateTime resetOtpExpiry) {
+        this.resetOtpExpiry = resetOtpExpiry;
+    }
+
+    private String resetOtp;
+    private LocalDateTime resetOtpExpiry;
 
     public String getFullName(){
         return  firstName + " " + lastName;

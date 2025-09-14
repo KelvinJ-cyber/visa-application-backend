@@ -1,5 +1,6 @@
 package com.kelvin.visa_application_site.Users.services;
 
+import com.kelvin.visa_application_site.Admin.service.MailService;
 import com.kelvin.visa_application_site.Users.dto.UserLoginDto;
 import com.kelvin.visa_application_site.Users.dto.UserLoginResponse;
 import com.kelvin.visa_application_site.Users.dto.UserRegisterDto;
@@ -10,6 +11,8 @@ import com.kelvin.visa_application_site.exception.InvalidCodeException;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import com.kelvin.visa_application_site.exception.VerificationExpiredException;
 import jakarta.mail.MessagingException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -29,19 +33,22 @@ public class UserAuthService {
     private final UserVerifyEmailService userVerifyEmailService;
     private final AuthenticationManager authenticationManager;
     private final JwtServices jwtServices;
+    private final MailService mailService;
 
     public UserAuthService(
             UserRepo userRepo,
             PasswordEncoder userPasswordEncoder,
             AuthenticationManager authenticationManager,
             UserVerifyEmailService userVerifyEmailService,
-            JwtServices jwtServices
+            JwtServices jwtServices,
+            MailService mailService
     ) {
         this.userRepo = userRepo;
         this.userPasswordEncoder = userPasswordEncoder;
         this.userVerifyEmailService = userVerifyEmailService;
         this.authenticationManager = authenticationManager;
         this.jwtServices = jwtServices;
+        this.mailService = mailService;
 
     }
 
@@ -175,5 +182,66 @@ public class UserAuthService {
         return String.valueOf(code);
     }
 
+    public void sendOtpEmail(String to, String otp) throws MessagingException {
+        String subject = "TravelSure | Password reset otp";
+        String htmlContent = """
+                <html>
+                  <body style="font-family: Arial, sans-serif;">
+                    <h2>Password Reset OTP</h2>
+                    <p>Your OTP code is:</p>
+                    <h1 style="color: #2E86C1;">%s</h1>
+                    <p>This code will expire in 10 minutes.</p>
+                    <p>How could you forget your password ??</p>
+                  </body>
+                </html>
+                """.formatted(otp);
+        mailService.sendHtmlMail(to, subject, htmlContent);
+    }
 
+    public void requestResetOtp(Map<String, String> request) throws MessagingException {
+        String email = request.get("email");
+
+        Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        String otp = String.format("%06d", new Random().nextInt(99999));
+        user.setResetOtp(otp);
+        user.setResetOtpExpiry(LocalDateTime.now().plusMinutes(10));
+        userRepo.save(user);
+
+        sendOtpEmail(email, otp);
+    }
+
+    public ResponseEntity<?> resetPassword(Map<String, String> request) {
+        String email = request.get("email").trim();
+        String otp = request.get("otp").trim().toLowerCase();
+        String newPassword = request.get("newPassword");
+
+        Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (!otp.equals(user.getResetOtp())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "The OTP you entered is incorrect"));
+        }
+
+        if (user.getResetOtpExpiry().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "OTP expired"));
+        }
+
+
+        user.setPassword(userPasswordEncoder.encode(newPassword));
+        user.setResetOtpExpiry(null);
+        user.setResetOtp(null);
+        userRepo.save(user);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Password reset successful"
+        ));
+    }
 }
+
+
+

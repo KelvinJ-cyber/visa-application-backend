@@ -9,6 +9,7 @@ import com.kelvin.visa_application_site.Users.services.UserAuthService;
 import com.kelvin.visa_application_site.exception.InvalidCodeException;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import com.kelvin.visa_application_site.exception.VerificationExpiredException;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -101,5 +102,25 @@ public class UserAuthController {
         }
     }
 
+    @PostMapping("/request-reset-otp")
+    public ResponseEntity<?> requestResetOtp(@RequestBody Map<String, String> request) throws MessagingException {
+
+        try {
+            userAuthService.requestResetOtp(request);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "OTP sent to your email"
+            ));
+        } catch (MessagingException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something went wrong" + e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public void resetPassword(@RequestBody Map<String, String> request){
+        userAuthService.resetPassword(request);
+    }
 
 }
