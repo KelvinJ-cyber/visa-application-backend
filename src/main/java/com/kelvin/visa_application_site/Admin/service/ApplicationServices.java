@@ -92,4 +92,8 @@ public class ApplicationServices {
                 updated.getStatus()
         );
     }
+
+    public Long dashboardData(){
+        return visaRepo.count();
+    }
 }

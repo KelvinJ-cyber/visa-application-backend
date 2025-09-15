@@ -212,7 +212,7 @@ public class UserAuthService {
         sendOtpEmail(email, otp);
     }
 
-    public ResponseEntity<?> resetPassword(Map<String, String> request) {
+    public void resetPassword(Map<String, String> request) {
         String email = request.get("email").trim();
         String otp = request.get("otp").trim().toLowerCase();
         String newPassword = request.get("newPassword");
@@ -221,13 +221,13 @@ public class UserAuthService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (!otp.equals(user.getResetOtp())) {
-            return ResponseEntity
+             ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "The OTP you entered is incorrect"));
         }
 
         if (user.getResetOtpExpiry().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+             ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "OTP expired"));
         }
 
@@ -237,7 +237,7 @@ public class UserAuthService {
         user.setResetOtp(null);
         userRepo.save(user);
 
-        return ResponseEntity.ok(Map.of(
+         ResponseEntity.ok(Map.of(
                 "message", "Password reset successful"
         ));
     }

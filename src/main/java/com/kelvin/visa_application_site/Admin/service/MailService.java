@@ -87,7 +87,7 @@ public class MailService {
                             <p style="font-size: 12px; color: #777;">This is an automated message from the Visa Application System. Please do not reply.</p>
                           </body>
                         </html>
-                        """.formatted(user.getFirstName(), message);
+                        """.formatted(user.getFullName(), message);
                 sendHtmlMail(user.getUsername(), subject, htmlContent);
             } catch (MessagingException e) {
                 System.err.println("Failed to send email to " + user.getUsername() + ": " + e.getMessage());

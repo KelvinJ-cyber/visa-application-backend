@@ -49,7 +49,7 @@ public class UserNotificationController {
     }
 
     @PostMapping("/email-all")
-    public ResponseEntity<?> sendBroadcastEmail(Map<String, String> request) {
+    public ResponseEntity<?> sendBroadcastEmail(@RequestBody  Map<String, String> request) {
 
         if (!request.containsKey("subject") || !request.containsKey("message")
                 || request.get("subject").isBlank() || request.get("message").isBlank()) {

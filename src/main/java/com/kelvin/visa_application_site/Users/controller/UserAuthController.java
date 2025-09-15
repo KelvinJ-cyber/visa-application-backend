@@ -119,8 +119,17 @@ public class UserAuthController {
     }
 
     @PostMapping("/reset-password")
-    public void resetPassword(@RequestBody Map<String, String> request){
-        userAuthService.resetPassword(request);
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request){
+        try{
+            userAuthService.resetPassword(request);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Password reset successful"
+            ));
+        }catch (RuntimeException e){
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Something went wrong" + e.getMessage());
+        }
     }
 
 }

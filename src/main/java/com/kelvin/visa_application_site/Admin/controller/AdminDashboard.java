@@ -1,5 +1,9 @@
 package com.kelvin.visa_application_site.Admin.controller;
 
+import com.kelvin.visa_application_site.Admin.service.ApplicationServices;
+import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +19,12 @@ import java.util.Map;
 @RequestMapping("/api/admin")
 public class AdminDashboard {
 
+    @Autowired
+    private ApplicationServices services;
 
     @GetMapping("/home")
-    public Map<String, String> greetAdmin() {
-        return Map.of("name", "Kelvin", "age", "16");
+    public ResponseEntity<Map<String, Long>> greetAdmin() {
+        return ResponseEntity.ok(Map.of("All Applications", services.dashboardData()));
     }
 
 }
