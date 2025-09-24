@@ -68,9 +68,10 @@ public class UserAuthController {
     }
 
     @PostMapping("/resend-verification")
-    public ResponseEntity<?> resendVerificationEmail(@RequestParam String email) {
+    public ResponseEntity<?> resendVerificationEmail(@RequestBody Map<String, String> email) {
         try {
-            userAuthService.resendVerificationCode(email);
+            String emailAddress = email.get("email");
+            userAuthService.resendVerificationCode(emailAddress);
             return ResponseEntity.ok("Verification email resent successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -83,7 +84,7 @@ public class UserAuthController {
         try {
             UserLoginResponse authenticatedUser = userAuthService.authenticate(data);
 
-            if (authenticatedUser != null && authenticatedUser.token() != null) {
+            if (authenticatedUser != null && authenticatedUser.getToken() != null) {
                 return ResponseEntity.ok(authenticatedUser);
             } else {
                 return ResponseEntity

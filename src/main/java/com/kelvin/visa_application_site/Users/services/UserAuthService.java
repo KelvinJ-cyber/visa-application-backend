@@ -172,7 +172,17 @@ public class UserAuthService {
         );
         String token = jwtServices.generateToken(user);
 
-        return new UserLoginResponse(user.getFirstName(), user.getLastName(), user.getRole().toString(), token, jwtServices.extractExpiration(token));
+        return new UserLoginResponse(
+                user.getId(),
+                Map.of(
+                        "firstName", user.getFirstName(),
+                        "lastName", user.getLastName(),
+                        "email", user.getUsername(),
+                        "role", user.getRole().toString()
+                ),
+                token,
+                jwtServices.extractExpiration(token)
+        );
 
     }
 
