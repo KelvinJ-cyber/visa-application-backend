@@ -212,7 +212,7 @@ public class UserAuthService {
         String email = request.get("email");
 
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
 
         String otp = String.format("%06d", new Random().nextInt(99999));
         user.setResetOtp(otp);
