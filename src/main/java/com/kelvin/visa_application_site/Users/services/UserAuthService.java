@@ -17,8 +17,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -51,6 +53,9 @@ public class UserAuthService {
         this.mailService = mailService;
 
     }
+
+    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final int OTP_LENGTH = 6;
 
     public Users register(UserRegisterDto data) {
         Users user = new Users(
@@ -192,6 +197,13 @@ public class UserAuthService {
         return String.valueOf(code);
     }
 
+    private String generateOtp() {
+        int min = (int) Math.pow(10, OTP_LENGTH - 1);
+        int max = (int) Math.pow(10, OTP_LENGTH) - 1;
+        int otp = secureRandom.nextInt((max - min) + 1) + min;
+        return String.valueOf(otp);
+    }
+
     public void sendOtpEmail(String to, String otp) throws MessagingException {
         String subject = "TravelSure | Password reset otp";
         String htmlContent = """
@@ -214,43 +226,57 @@ public class UserAuthService {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
 
-        String otp = String.format("%06d", new Random().nextInt(99999));
-        user.setResetOtp(otp);
+        String otp = generateOtp();
+        String hashedOtp = userPasswordEncoder.encode(otp);
+
+        user.setResetOtp(hashedOtp);
         user.setResetOtpExpiry(LocalDateTime.now().plusMinutes(10));
         userRepo.save(user);
 
-        sendOtpEmail(email, otp);
+        sendOtpEmail(email.trim(), otp);
     }
 
-    public void resetPassword(Map<String, String> request) {
-        String email = request.get("email").trim();
-        String otp = request.get("otp").trim().toLowerCase();
-        String newPassword = request.get("newPassword");
+   public ResponseEntity<?> resetPassword(Map<String, String> request){
+       String email = request.get("email");
+       String otp = request.get("otp");
+       String newPassword = request.get("newPassword");
+
+       if (email == null || otp == null || newPassword == null) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                   .body(Map.of("error", "email, otp and newPassword are required"));
+       }
 
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+            .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
 
-        if (!otp.equals(user.getResetOtp())) {
-             ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "The OTP you entered is incorrect"));
+        String hashedOtp = user.getResetOtp();
+        LocalDateTime expiry = user.getResetOtpExpiry();
+
+        if (hashedOtp == null || expiry == null || expiry.isBefore(LocalDateTime.now())) {
+
+            user.setResetOtp(null);
+            user.setResetOtpExpiry(null);
+            userRepo.save(user);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "OTP is invalid or has expired"));
         }
 
-        if (user.getResetOtpExpiry().isBefore(LocalDateTime.now())) {
-             ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "OTP expired"));
-        }
+       boolean matches = userPasswordEncoder.matches(otp, hashedOtp);
+       if (!matches) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                   .body(Map.of("error", "The OTP you entered is incorrect"));
+       }
+
+       user.setPassword(userPasswordEncoder.encode(newPassword));
+       user.setResetOtp(null);
+       user.setResetOtpExpiry(null);
+       userRepo.save(user);
+
+       return ResponseEntity.ok(Map.of("message", "Password reset successful"));
 
 
-        user.setPassword(userPasswordEncoder.encode(newPassword));
-        user.setResetOtpExpiry(null);
-        user.setResetOtp(null);
-        userRepo.save(user);
 
-         ResponseEntity.ok(Map.of(
-                "message", "Password reset successful"
-        ));
-    }
+   }
 }
 
 
