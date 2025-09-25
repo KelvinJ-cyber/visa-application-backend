@@ -46,7 +46,7 @@ public class Users implements UserDetails {
     }
 
     private String resetOtp;
-    private LocalDateTime resetOtpExpiry;
+    private LocalDateTime resetOtpExpiry = LocalDateTime.now();
 
     public String getFullName(){
         return  firstName + " " + lastName;

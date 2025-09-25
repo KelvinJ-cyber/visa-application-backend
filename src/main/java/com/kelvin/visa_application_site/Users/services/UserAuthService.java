@@ -11,6 +11,8 @@ import com.kelvin.visa_application_site.exception.InvalidCodeException;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import com.kelvin.visa_application_site.exception.VerificationExpiredException;
 import jakarta.mail.MessagingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,9 @@ public class UserAuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtServices jwtServices;
     private final MailService mailService;
+
+    private static final Logger log = LoggerFactory.getLogger(UserAuthService.class);
+
 
     public UserAuthService(
             UserRepo userRepo,
@@ -222,12 +227,18 @@ public class UserAuthService {
 
     public void requestResetOtp(Map<String, String> request) throws MessagingException {
         String email = request.get("email");
+        if (email == null || email.isBlank()) {
+            throw new UserNotFoundException("Email is required");
+        }
 
-        Users user = userRepo.findByEmail(email)
+        Users user = userRepo.findByEmail(email.trim())
                 .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
 
         String otp = generateOtp();
         String hashedOtp = userPasswordEncoder.encode(otp);
+
+        // ! Debug log for OTP generation (remove/comment in production)
+        log.debug("Generated OTP for {} = {}", email, otp);
 
         user.setResetOtp(hashedOtp);
         user.setResetOtpExpiry(LocalDateTime.now().plusMinutes(10));
@@ -236,48 +247,54 @@ public class UserAuthService {
         sendOtpEmail(email.trim(), otp);
     }
 
-   public ResponseEntity<?> resetPassword(Map<String, String> request){
-       String email = request.get("email");
-       String otp = request.get("otp");
-       String newPassword = request.get("newPassword");
+    public ResponseEntity<?> resetPassword(Map<String, String> request){
+        String email = request.get("email");
+        String otp = request.get("otp");
+        String newPassword = request.get("newPassword");
 
-       if (email == null || otp == null || newPassword == null) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                   .body(Map.of("error", "email, otp and newPassword are required"));
-       }
+        if (email == null || otp == null || newPassword == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "email, otp and newPassword are required"));
+        }
 
-        Users user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
+        Users user = userRepo.findByEmail(email.trim())
+                .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
 
         String hashedOtp = user.getResetOtp();
         LocalDateTime expiry = user.getResetOtpExpiry();
 
-        if (hashedOtp == null || expiry == null || expiry.isBefore(LocalDateTime.now())) {
+        if (hashedOtp == null || hashedOtp.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "No OTP requested or OTP already used"));
+        }
 
+        if (expiry == null || expiry.isBefore(LocalDateTime.now())) {
             user.setResetOtp(null);
             user.setResetOtpExpiry(null);
             userRepo.save(user);
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "OTP is invalid or has expired"));
+                    .body(Map.of("error", "OTP expired"));
         }
 
-       boolean matches = userPasswordEncoder.matches(otp, hashedOtp);
-       if (!matches) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                   .body(Map.of("error", "The OTP you entered is incorrect"));
-       }
+        // Trim OTP to avoid issues with extra spaces from client
+        String trimmedOtp = otp.trim();
 
-       user.setPassword(userPasswordEncoder.encode(newPassword));
-       user.setResetOtp(null);
-       user.setResetOtpExpiry(null);
-       userRepo.save(user);
+        log.debug("Incoming OTP for {}: '{}'", email, trimmedOtp);
+        log.debug("Stored hash: {}", hashedOtp);
 
-       return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+        boolean matches = userPasswordEncoder.matches(trimmedOtp, hashedOtp);
+        if (!matches) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "The OTP you entered is incorrect"));
+        }
 
+        user.setPassword(userPasswordEncoder.encode(newPassword));
+        user.setResetOtp(null);
+        user.setResetOtpExpiry(null);
+        userRepo.save(user);
 
-
-   }
+        return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+    }
 }
-
-
 

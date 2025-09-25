@@ -121,16 +121,8 @@ public class UserAuthController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request){
-        try{
-            userAuthService.resetPassword(request);
-            return ResponseEntity.ok(Map.of(
-                    "message", "Password reset successful"
-            ));
-        }catch (RuntimeException e){
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Something went wrong" + e.getMessage());
-        }
+        // Directly return the response from service (it already handles error/success)
+        return userAuthService.resetPassword(request);
     }
 
 }
