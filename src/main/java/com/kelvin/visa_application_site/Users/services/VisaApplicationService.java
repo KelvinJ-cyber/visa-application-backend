@@ -37,7 +37,6 @@ public class VisaApplicationService {
         applications.setPassportNumber(data.passportNumber());
         applications.setNationality(data.nationality());
         applications.setCreatedAt(LocalDateTime.now());
-        applications.getStatus();
 
         VisaApplications saved = visaRepo.save(applications);
 

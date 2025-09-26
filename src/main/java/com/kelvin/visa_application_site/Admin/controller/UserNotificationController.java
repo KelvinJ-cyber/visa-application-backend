@@ -1,6 +1,9 @@
 package com.kelvin.visa_application_site.Admin.controller;
 
+import com.kelvin.visa_application_site.Admin.dto.NotificationResponse;
+import com.kelvin.visa_application_site.Admin.model.Notification;
 import com.kelvin.visa_application_site.Admin.service.MailService;
+import com.kelvin.visa_application_site.Admin.service.NotificationService;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
@@ -19,10 +22,12 @@ public class UserNotificationController {
 
     public final MailService mailService;
     private final UserRepo userRepo;
+    private final NotificationService nService;
 
-    public UserNotificationController(MailService mailService, UserRepo userRepo) {
+    public UserNotificationController(MailService mailService, UserRepo userRepo, NotificationService nService) {
         this.mailService = mailService;
         this.userRepo = userRepo;
+        this.nService = nService;
     }
 
     @PostMapping("/email/{userId}")
@@ -66,4 +71,13 @@ public class UserNotificationController {
         }
 
     }
+    @PostMapping("/{userId}")
+    public ResponseEntity<NotificationResponse> createNotification(
+            @RequestBody Notification data,
+            @PathVariable int userId
+    ) {
+        NotificationResponse response = nService.createNotification(userId, data);
+        return ResponseEntity.ok(response);
+    }
+
 }
