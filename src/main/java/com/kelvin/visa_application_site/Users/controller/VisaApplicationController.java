@@ -1,5 +1,6 @@
 package com.kelvin.visa_application_site.Users.controller;
 
+import com.kelvin.visa_application_site.Users.dto.SubmitApplicationResponse;
 import com.kelvin.visa_application_site.Users.dto.VisaApplicationDto;
 import com.kelvin.visa_application_site.Users.dto.VisaApplicationResponseDto;
 import com.kelvin.visa_application_site.Users.model.Users;
@@ -41,6 +42,13 @@ public class VisaApplicationController {
 
         return ResponseEntity.ok(applicationService.getUserApplications(user));
 
+    }
+    @PostMapping("/{applicationId}/submit")
+    public ResponseEntity<SubmitApplicationResponse> submitApplication(@PathVariable int applicationId){
+
+        SubmitApplicationResponse response = applicationService.submitApplication(applicationId);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

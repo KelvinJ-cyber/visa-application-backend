@@ -42,7 +42,7 @@ public class ApplicationServices {
     }
 
 
-    public List<AllApplicationsResponseDto> getApplications(String status){
+    public List<AllApplicationsResponseDto> getApplicationsByStatus(String status){
         List<VisaApplications> applications;
 
         if (status == null || status.isBlank()) {
@@ -63,6 +63,7 @@ public class ApplicationServices {
                         app.getCreatedAt()
                 )).toList();
     }
+
 
 
     public VisaApplicationResponseDto updateApplicationStatus(

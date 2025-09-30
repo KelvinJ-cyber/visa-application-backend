@@ -1,11 +1,13 @@
 package com.kelvin.visa_application_site.Users.services;
 
+import com.kelvin.visa_application_site.Users.dto.SubmitApplicationResponse;
 import com.kelvin.visa_application_site.Users.dto.VisaApplicationDto;
 import com.kelvin.visa_application_site.Users.dto.VisaApplicationResponseDto;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.model.VisaApplications;
 import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import com.kelvin.visa_application_site.Users.repo.VisaApplicationRepo;
+import com.kelvin.visa_application_site.enumerated.ApplicationStatus;
 import com.kelvin.visa_application_site.exception.ApplicationNotFoundException;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -73,6 +75,20 @@ public class VisaApplicationService {
 
     public VisaApplications findApplicationById(int id){
               return visaRepo.findById(id).orElseThrow(() -> new ApplicationNotFoundException("Application Not Found"));
+    }
+
+    public SubmitApplicationResponse submitApplication(int applicationId){
+        VisaApplications application = visaRepo.findById(applicationId)
+                .orElseThrow( () -> new ApplicationNotFoundException("Application not found"));
+
+        application.setStatus(ApplicationStatus.SUBMITTED);
+        String message = "Thank you. Your application and documents have been submitted successfully.";
+
+        VisaApplications submitted = visaRepo.save(application);
+
+        return  new SubmitApplicationResponse(
+                message
+        );
     }
 
 }

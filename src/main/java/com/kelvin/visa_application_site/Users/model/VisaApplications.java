@@ -28,7 +28,7 @@ public class VisaApplications {
     private String visaType;
     @Column(nullable = false)
     private String countryOfApplication;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String passportNumber;
     @Column(nullable = false)
     private String nationality;

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -22,9 +23,11 @@ public class DocumentService {
         this.visaRepo = visaRepo;
     }
 
-    public Documents uploadFile(MultipartFile file, int applicationId ) throws Exception{
+    public Documents uploadFile(MultipartFile file, int applicationId, Long documentId ) throws Exception{
         VisaApplications app = visaRepo.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application Not Found"));
+        Documents documents = documentRepo.findById(documentId)
+                .orElse(new Documents());
 
         Documents doc = new Documents();
         doc.setFileName(file.getOriginalFilename());
@@ -48,7 +51,10 @@ public class DocumentService {
                 doc.getUploadedAt()
         );
     }
-
+    // ! Not in use
+//    public List<Documents> getUploadedDocument(Long applicationId){
+//        return  documentRepo.findByApplicationId(applicationId);
+//    }
 
 
 }

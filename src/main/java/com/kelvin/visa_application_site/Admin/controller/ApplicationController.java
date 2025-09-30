@@ -25,7 +25,7 @@ public class ApplicationController {
     @GetMapping
     public ResponseEntity<List<AllApplicationsResponseDto>> getApplications(@RequestParam(required = false) String status) {
 
-        return ResponseEntity.ok(applicationServices.getApplications(status));
+        return ResponseEntity.ok(applicationServices.getApplicationsByStatus(status));
 
     }
 
