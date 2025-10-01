@@ -37,4 +37,22 @@ public class ProfileSettingsServices {
         userRepo.save(user);
         return ResponseEntity.ok(Map.of("message", "Password change successful, Logout to confirm"));
     }
+
+    public void deactivateAccount(int userId, String currentPassword ){
+        Users user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!user.isAccountNonLocked()) {
+            throw new IllegalStateException("Account already deactivated");
+        }
+        if (currentPassword == null || currentPassword.isBlank()) {
+            throw new IllegalArgumentException("Current password is required");
+        }
+        if (!userPasswordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Your password is incorrect. Enter your current password to deactivate.");
+        }
+        // lock the account (accountNonLocked = false)
+        user.setAccountNonLocked(false);
+        userRepo.save(user);
+    }
 }

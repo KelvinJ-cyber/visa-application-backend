@@ -146,6 +146,7 @@ public class UserAuthService {
             throw new InvalidCodeException("Invalid verification code");
         }
         user.setEnabled(true);
+        user.setAccountNonLocked(true);
         user.setVerificationCode(null);
         user.setVerificationExpiry(null);
         userRepo.save(user);
@@ -169,7 +170,7 @@ public class UserAuthService {
 
     public UserLoginResponse authenticate(UserLoginDto data) {
         Users user = userRepo.findByEmail(data.email())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found, Please ensure you have an account with These Credentials "));
 
         if (!user.isEnabled()) {
             throw new RuntimeException("Account not verified. Please verify your account.");
@@ -232,7 +233,7 @@ public class UserAuthService {
         }
 
         Users user = userRepo.findByEmail(email.trim())
-                .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again"));
+                .orElseThrow(() -> new UserNotFoundException("Email not found, Please check and try again!"));
 
         String otp = generateOtp();
         String hashedOtp = userPasswordEncoder.encode(otp);

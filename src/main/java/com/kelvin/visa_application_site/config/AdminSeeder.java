@@ -23,7 +23,7 @@ public class AdminSeeder {
                 admin.setLastName("Justine");
                 admin.getRole();
                 admin.setEmail("kelvinosondu419@gmail.com");
-                admin.setPassword(passwordEncoder.encode("k@123"));
+                admin.setPassword(passwordEncoder.encode("k@12345"));
 
                 adminRepo.save(admin);
                 System.out.println("✅ Admin created!");

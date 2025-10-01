@@ -95,9 +95,9 @@ public class UserAuthController {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(e.getMessage());
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .status(HttpStatus.BAD_REQUEST)
                     .body("Something went wrong: " + e.getMessage());
 
         }

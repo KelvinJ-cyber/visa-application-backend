@@ -70,6 +70,8 @@ public class Users implements UserDetails {
 
     private LocalDateTime verificationExpiry;
 
+    private boolean isAccountNonLocked;
+
     public Users(String email, String password, String firstName, String lastName) {
         this.email = email;
         this.password = password;
@@ -106,7 +108,11 @@ public class Users implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isAccountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        isAccountNonLocked = accountNonLocked;
     }
 
     @Override
