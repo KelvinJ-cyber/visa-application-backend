@@ -11,15 +11,11 @@ import com.kelvin.visa_application_site.exception.InvalidCodeException;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
 import com.kelvin.visa_application_site.exception.VerificationExpiredException;
 import jakarta.mail.MessagingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -39,7 +35,6 @@ public class UserAuthService {
     private final JwtServices jwtServices;
     private final MailService mailService;
 
-    private static final Logger log = LoggerFactory.getLogger(UserAuthService.class);
 
 
     public UserAuthService(
@@ -238,9 +233,6 @@ public class UserAuthService {
         String otp = generateOtp();
         String hashedOtp = userPasswordEncoder.encode(otp);
 
-        // ! Debug log for OTP generation (remove/comment in production)
-        log.debug("Generated OTP for {} = {}", email, otp);
-
         user.setResetOtp(hashedOtp);
         user.setResetOtpExpiry(LocalDateTime.now().plusMinutes(10));
         userRepo.save(user);
@@ -281,8 +273,6 @@ public class UserAuthService {
         // Trim OTP to avoid issues with extra spaces from client
         String trimmedOtp = otp.trim();
 
-        log.debug("Incoming OTP for {}: '{}'", email, trimmedOtp);
-        log.debug("Stored hash: {}", hashedOtp);
 
         boolean matches = userPasswordEncoder.matches(trimmedOtp, hashedOtp);
         if (!matches) {
