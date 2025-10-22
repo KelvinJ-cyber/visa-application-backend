@@ -2,9 +2,9 @@
 services:
   - type: web
     name: visa-application-api
-    env: java
-    region: oregon
+    runtime: java
     plan: free
+    region: oregon
     buildCommand: "./mvnw clean package -DskipTests"
     startCommand: "java -jar target/*.jar"
 
@@ -42,6 +42,6 @@ services:
 
 databases:
   - name: visa-db
-    databaseName: visaApplication_db
+    databaseName: visaapplication_db
     plan: free
     region: oregon
