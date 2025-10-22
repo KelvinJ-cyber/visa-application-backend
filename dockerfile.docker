@@ -1,0 +1,14 @@
+# Use Java 21 runtime (compatible with Render)
+FROM eclipse-temurin:21-jdk
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the JAR file (adjust if your jar name differs)
+COPY target/*.jar app.jar
+
+# Expose Render’s dynamic port
+ENV PORT=8080
+
+# Start the Spring Boot application
+CMD ["java", "-jar", "app.jar"]

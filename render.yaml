@@ -38,6 +38,7 @@ services:
         value: "true"
       - key: PORT
         value: "8080"
+    runtime: docker
 
 databases:
   - name: visa-db
