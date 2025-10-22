@@ -35,53 +35,8 @@ services:
         value: "true"
       - key: MAIL_STARTTLS
         value: "true"
-      - key: PORT# render.yaml
-services:
-  - type: web
-    name: visa-application-api
-    plan: free
-    region: oregon
-    dockerfilePath: ./Dockerfile
-
-    envVars:
-      - key: DB_URL
-        fromDatabase:
-          name: visa-db
-          property: connectionString
-      - key: DB_USER
-        fromDatabase:
-          name: visa-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: visa-db
-          property: password
-      - key: JWT_SECRET
-        value: HWAu6wdp2NCKbrxHxj5zgdRgsORKa8ld632byrI21FY=
-      - key: JWT_EXPIRATION
-        value: "86400000"
-      - key: MAIL_HOST
-        value: smtp.gmail.com
-      - key: MAIL_PORT
-        value: "587"
-      - key: MAIL_USERNAME
-        value: kelvinosondu419@gmail.com
-      - key: MAIL_PASSWORD
-        value: aewt znyl lmsi ljcs
-      - key: MAIL_AUTH
-        value: "true"
-      - key: MAIL_STARTTLS
-        value: "true"
       - key: PORT
         value: "8080"
-
-databases:
-  - name: visa-db
-    databaseName: visaapplication_db
-    plan: free
-    region: oregon
-
-      value: "8080"
 
 databases:
   - name: visa-db
