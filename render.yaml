@@ -2,7 +2,6 @@
 services:
   - type: web
     name: visa-application-api
-    runtime: java
     plan: free
     region: oregon
     buildCommand: "./mvnw clean package -DskipTests"
