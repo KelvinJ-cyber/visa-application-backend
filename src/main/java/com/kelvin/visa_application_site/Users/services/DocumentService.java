@@ -39,7 +39,7 @@ public class DocumentService {
         return documentRepo.save(doc);
 
     }
-
+  // ! not in use
     public DocumentResponseDto downloadFile(Long documentId) {
         Documents doc = documentRepo.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("File not found"));

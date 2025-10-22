@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
-@CrossOrigin(origins =  "http://localhost:5173")
+@CrossOrigin(origins =  "https://visa-application-frontend.vercel.app/")
 @RequestMapping("/api/user")
 public class UserDashboard {
 

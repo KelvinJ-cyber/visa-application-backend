@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
-@CrossOrigin(origins =  "http://localhost:5173")
+@CrossOrigin(origins =  "https://visa-application-frontend.vercel.app/")
 @RequestMapping("/api/user/applications")
 public class VisaApplicationController {
 

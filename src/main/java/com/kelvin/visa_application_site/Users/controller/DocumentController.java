@@ -1,7 +1,6 @@
 package com.kelvin.visa_application_site.Users.controller;
 
 import com.kelvin.visa_application_site.Users.dto.DocumentResponseDto;
-import com.kelvin.visa_application_site.Users.model.Documents;
 import com.kelvin.visa_application_site.Users.services.DocumentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
-@CrossOrigin(origins =  "http://localhost:5173")
+@CrossOrigin(origins =  "https://visa-application-frontend.vercel.app")
 @RequestMapping("/api/user/documents")
 public class DocumentController {
 
