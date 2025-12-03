@@ -154,6 +154,7 @@ public class UserAuthService {
             if (user.isEnabled()) {
                 throw new RuntimeException("Account is already verified");
             }
+            user.setVerificationCode(null);
             user.setVerificationCode(generateVerificationCode());
             user.setVerificationExpiry(LocalDateTime.now().plusMinutes(5));
             sendVerificationEmail(user);
