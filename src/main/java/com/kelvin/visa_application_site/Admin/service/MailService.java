@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,12 +35,15 @@ public class MailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
             helper.setTo(to);
+            helper.setFrom("justineikechi6@gmail.com", "Kelvin Visa System"); // Must be verified in Brevo
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -84,7 +88,7 @@ public class MailService {
                             <p>Hello <b>%s</b>,</p>
                             <p>%s</p>
                             <hr>
-                            <p style="font-size: 12px; color: #777;">This is an automated message from the Visa Application System. Please do not reply.</p>
+                            <p style="font-size: 12px; color: zz#777;">This is an automated message from the Visa Application System. Please do not reply.</p>
                           </body>
                         </html>
                         """.formatted(user.getFullName(), message);
