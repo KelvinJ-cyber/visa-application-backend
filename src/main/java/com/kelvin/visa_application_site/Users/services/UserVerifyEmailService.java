@@ -20,7 +20,7 @@ public class UserVerifyEmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         helper.setTo(to);
-        helper.setFrom("justineikechi6@gmail.com", "Kelvin Visa System"); // Must be verified in Brevo
+        helper.setFrom("justineikechi6@gmail.com", "Travel Sure Team"); // Must be verified in Brevo
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(text, true); // Set to true if the text contains HTML

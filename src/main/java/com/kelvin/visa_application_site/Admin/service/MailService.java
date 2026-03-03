@@ -35,7 +35,7 @@ public class MailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
             helper.setTo(to);
-            helper.setFrom("justineikechi6@gmail.com", "Kelvin Visa System"); // Must be verified in Brevo
+            helper.setFrom("justineikechi6@gmail.com", "Travel Sure Team"); // Must be verified in Brevo
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
 

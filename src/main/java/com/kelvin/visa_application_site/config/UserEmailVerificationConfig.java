@@ -23,7 +23,7 @@ public class UserEmailVerificationConfig {
 
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp-relay.brevo.com");
-        mailSender.setPort(587);
+        mailSender.setPort(2525);
         mailSender.setUsername(emailUsername);
         mailSender.setPassword(emailPassword);
 
