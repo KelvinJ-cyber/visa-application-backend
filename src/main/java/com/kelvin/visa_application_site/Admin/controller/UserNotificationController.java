@@ -7,7 +7,6 @@ import com.kelvin.visa_application_site.Admin.service.NotificationService;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
-import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/api/admin/notification")
 public class UserNotificationController {
 
-    public final MailService mailService;
+    private final MailService mailService;
     private final UserRepo userRepo;
     private final NotificationService nService;
 
@@ -48,7 +47,7 @@ public class UserNotificationController {
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -3,51 +3,60 @@ package com.kelvin.visa_application_site.Admin.service;
 import com.kelvin.visa_application_site.Users.model.Users;
 import com.kelvin.visa_application_site.Users.repo.UserRepo;
 import com.kelvin.visa_application_site.exception.UserNotFoundException;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class MailService {
+    @Value("${BREVO_API_KEY}")
+    private String apiKey;
+    private WebClient webClient;
 
-    public final JavaMailSender mailSender;
     public final UserRepo userRepo;
 
     public MailService(
-            JavaMailSender mailSender,
             UserRepo userRepo
     ) {
-        this.mailSender = mailSender;
         this.userRepo = userRepo;
     }
 
-
-    public void sendHtmlMail(String to, String subject, String htmlBody) throws MessagingException {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-
-            helper.setTo(to);
-            helper.setFrom("justineikechi6@gmail.com", "Travel Sure Team"); // Must be verified in Brevo
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true);
-
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email", e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+    @PostConstruct
+    public void init() {
+        this.webClient = WebClient.builder()
+                .baseUrl("https://api.brevo.com/v3")
+                .defaultHeader("Content-Type", "application/json")
+                .defaultHeader("api-key", apiKey)
+                .build();
     }
 
-    public void sendApplicationNotification(int userId, Map<String, String>request) throws MessagingException{
+    public void sendHtmlMail(String to, String subject, String htmlBody) {
+        Map<String, Object> payload = Map.of(
+                "sender", Map.of(
+                        "name", "Travel Sure Team",
+                        "email", "justineikechi6@gmail.com"
+                ),
+                "to", List.of(
+                        Map.of("email", to)
+                ),
+                "subject", subject,
+                "htmlContent", htmlBody
+        );
+        webClient.post()
+                .uri("/smtp/email")
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+    }
+
+    public void sendApplicationNotification(int userId, Map<String, String> request) {
         Users user = userRepo.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found !"));
 
@@ -93,7 +102,7 @@ public class MailService {
                         </html>
                         """.formatted(user.getFullName(), message);
                 sendHtmlMail(user.getUsername(), subject, htmlContent);
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 System.err.println("Failed to send email to " + user.getUsername() + ": " + e.getMessage());
             }
         }

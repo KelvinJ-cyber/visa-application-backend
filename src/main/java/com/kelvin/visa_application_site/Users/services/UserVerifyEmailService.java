@@ -1,30 +1,47 @@
 package com.kelvin.visa_application_site.Users.services;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserVerifyEmailService {
 
-    @Autowired
-    public JavaMailSender emailSender;
+    @Value("${BREVO_API_KEY}")
+    private String apiKey;
+    private WebClient webClient;
 
-    public void sendVerificationEmail(String to, String subject, String text) throws MessagingException, UnsupportedEncodingException {
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+    @PostConstruct
+    public void init() {
+        this.webClient = WebClient.builder()
+                .baseUrl("https://api.brevo.com/v3")
+                .defaultHeader("Content-Type", "application/json")
+                .defaultHeader("api-key", apiKey)
+                .build();
+    }
 
-        helper.setTo(to);
-        helper.setFrom("justineikechi6@gmail.com", "Travel Sure Team"); // Must be verified in Brevo
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(text, true); // Set to true if the text contains HTML
+    public void sendVerificationEmail(String to, String subject, String htmlBody) {
+        Map<String, Object> payload = Map.of(
+                "sender", Map.of(
+                        "name", "Travel Sure Team",
+                        "email", "justineikechi6@gmail.com"
+                ),
+                "to", List.of(
+                        Map.of("email", to)
+                ),
+                "subject", subject,
+                "htmlContent", htmlBody
+        );
+        webClient.post()
+                .uri("/smtp/email")
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
-        emailSender.send(message);
     }
 }
